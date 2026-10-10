@@ -1,34 +1,34 @@
 # Titanic Survival Prediction
 
-В этом проекте я предсказываю, выжил ли пассажир «Титаника». Я сравнил классические модели, несколько бустингов, ансамбли и нейросеть на PyTorch.
+This project predicts passenger survival in the Titanic Kaggle competition. I used it to compare classic machine learning models, boosting algorithms, ensembles, and a PyTorch neural network.
 
-Итоговой моделью стал CatBoost с One-Hot Encoding. Я выбрал его по локальной кросс-валидации, а не по результату на Kaggle.
+The final model is CatBoost with one-hot encoded features. It was selected using local cross-validation rather than the public Kaggle leaderboard.
 
-## Файлы проекта
+## Project structure
 
-- `titanic_experiments.ipynb` — анализ данных и эксперименты
-- `main.py` — запуск готового пайплайна
-- `config.py` — настройки и параметры модели
-- `features.py` — создание признаков
-- `model.py` — предобработка и модель
-- `requirements.txt` — необходимые библиотеки
+- `titanic_experiments.ipynb` — data analysis and model experiments
+- `main.py` — runs the final pipeline
+- `config.py` — paths, random seed, and model parameters
+- `features.py` — feature engineering
+- `model.py` — preprocessing and model setup
+- `requirements.txt` — project dependencies
 
-## Запуск
+## Setup
 
-Создайте виртуальное окружение:
+Create a virtual environment on Windows:
 
 ```powershell
 py -m venv .venv
 .venv\Scripts\Activate.ps1
 ```
 
-Установите библиотеки:
+Install the dependencies:
 
 ```powershell
 python -m pip install -r requirements.txt
 ```
 
-Скачайте `train.csv` и `test.csv` со [страницы соревнования](https://www.kaggle.com/competitions/titanic/data) и положите их в папку `data`:
+Download `train.csv` and `test.csv` from the [Titanic competition page](https://www.kaggle.com/competitions/titanic/data) and place them in the `data` directory:
 
 ```text
 data/
@@ -36,74 +36,83 @@ data/
 └── test.csv
 ```
 
-Запустите проект:
+Run the pipeline:
 
 ```powershell
 python main.py
 ```
 
-Скрипт рассчитает метрики, обучит CatBoost на всех размеченных данных и сохранит результат в файл:
+The script evaluates the model, fits it on all labeled data, and saves the submission to:
 
 ```text
 submissions/production/titanic_catboost_one_hot.csv
 ```
 
-## Валидация
+## Validation
 
-Модели проверялись двумя способами:
+I used two validation schemes:
 
-- Regular CV — обычное стратифицированное разбиение;
-- Group CV — пассажиры с одним билетом не попадают одновременно в обучение и валидацию.
+- Regular CV uses repeated stratified splits.
+- Group CV keeps passengers with the same ticket in one fold.
 
-Для выбора модели я использовал среднее двух оценок. Число фолдов, повторов и `seed` находятся в `config.py`.
+The final selection score is the mean of the Regular CV and Group CV scores. The number of folds, repeats, and the random seed are defined in `config.py`.
 
-| Модель | Regular CV | Group CV | Среднее | Kaggle |
-|---|---:|---:|---:|---:|
-| CatBoost One-Hot | 0.8291 | 0.8259 | 0.8275 | 0.77511 |
-| Equal Soft Voting | 0.8319 | 0.8216 | 0.8268 | 0.77511 |
-| Equal Hard Voting | 0.8286 | 0.8212 | 0.8249 | 0.77751 |
-| CatBoost Native | 0.8226 | 0.8226 | 0.8226 | 0.77990 |
-| Gradient Boosting | 0.8258 | 0.8160 | 0.8209 | 0.78708 |
-| Stacking Ridge | 0.8230 | 0.8174 | 0.8202 | 0.78229 |
-| SVC | 0.8202 | 0.8188 | 0.8195 | 0.77033 |
-| Random Forest | 0.8202 | 0.8081 | 0.8142 | 0.76794 |
-| LightGBM | 0.8174 | 0.8104 | 0.8139 | 0.76794 |
-| Bagging Decision Tree | 0.8230 | 0.8047 | 0.8139 | 0.77990 |
-| Sex Rule | 0.7851 | 0.7852 | 0.7851 | 0.76555 |
+## Models and results
 
-На групповом holdout CatBoost получил accuracy `0.8492`, а простое правило по полу — `0.7933`.
+The notebook contains 19 models, including baselines, tuned models, ensembles, and a PyTorch neural network.
 
-Лучший результат на Kaggle показал Gradient Boosting. Несмотря на это, основной моделью остался CatBoost, потому что он был выбран по локальной валидации. Kaggle использовался только для внешней проверки.
+The "Best CV" column shows the best result obtained during tuning. These values are not always directly comparable because different validation schemes were used.
 
-## Эксперименты
+The "Selection score" is the mean of Regular CV and Group CV. It was calculated only for the final candidates and used to select the production model.
 
-В ноутбуке проверены Logistic Regression, KNN, SVC, Decision Tree, Random Forest, Gradient Boosting, XGBoost, LightGBM, два варианта CatBoost, bagging, voting, stacking и PyTorch DNN. Параметры моделей подбирались с помощью Optuna.
+Simple research baselines, such as Dummy Classifier and Sex + Pclass Tree, are available in the notebook but omitted from this summary.
 
-DNN получила `0.8300` на обычном CV и `0.76555` на Kaggle. Она не обошла классические модели, поэтому осталась отдельным экспериментом.
+| Model | Best CV | Tuning setup | Selection score | Kaggle |
+|---|---:|---|---:|---:|
+| XGBoost | 0.8342 | Regular CV | — | — |
+| Equal Soft Voting | 0.8328 | Mixed | 0.8268 | 0.77511 |
+| **CatBoost One-Hot** | 0.8315 | Group CV | **0.8275** | 0.77511 |
+| Equal Hard Voting | 0.8314 | Mixed | 0.8249 | 0.77751 |
+| PyTorch DNN | 0.8300 | Regular CV | — | 0.76555 |
+| KNN | 0.8272 | Regular CV | — | — |
+| Stacking Logistic | 0.8272 | Mixed | — | — |
+| Logistic Regression | 0.8258 | Regular CV | — | — |
+| CatBoost Native | 0.8231 | Group CV | 0.8226 | 0.77990 |
+| Stacking Ridge | 0.8230 | Mixed | 0.8202 | 0.78229 |
+| **Gradient Boosting** | 0.8189 | Group CV | 0.8209 | **0.78708** |
+| SVC | 0.8174 | Group CV | 0.8195 | 0.77033 |
+| Decision Tree | 0.8174 | Regular CV | — | — |
+| Bagging Decision Tree | 0.8174 | Group CV | 0.8139 | 0.77990 |
+| LightGBM | 0.8146 | Group CV | 0.8139 | 0.76794 |
+| Random Forest | 0.8105 | Group CV | 0.8142 | 0.76794 |
+| Sex Rule | 0.7850 | Not tuned | 0.7851 | 0.76555 |
 
-В DNN два скрытых слоя и функция потерь `BCEWithLogitsLoss`. Число слоёв и функция потерь не подбирались.
+CatBoost One-Hot ranked first in the final local comparison and scored `0.8492` on the group holdout. The Sex Rule baseline scored `0.7933` on the same holdout.
 
-## Признаки
+Gradient Boosting had the best public leaderboard score. I kept CatBoost One-Hot as the final model because it was selected by local validation. Kaggle scores were used only as an external check.
 
-Кроме исходных данных, модель использует:
+The five-fold CatBoost submission averaged predicted probabilities. It differed from the full-fit submission for only two passengers, and both submissions scored `0.77511`.
 
-- титул пассажира;
-- размер семьи;
-- информацию о билете;
-- палубу и количество кают;
-- стоимость билета на одного пассажира;
-- состав группы по билету и фамилии.
+## PyTorch DNN
 
-Групповые признаки рассчитываются по `train` и `test` вместе, но без использования `Survived`. Их добавление немного улучшило результаты на обоих вариантах CV.
+The DNN scored `0.8300` on Regular CV and `0.76555` on Kaggle. It did not outperform the classic models, so it was kept as a separate experiment.
 
-Создание признаков, заполнение пропусков, масштабирование и кодирование находятся внутри пайплайна.
+The network has two hidden layers and uses `BCEWithLogitsLoss`. The number of layers and the loss function were not tuned.
 
-## Ограничения
+## Features
 
-- Данных мало, поэтому несколько изменившихся предсказаний могут заметно повлиять на результат.
-- Holdout проверялся несколько раз во время разработки, поэтому это не полностью независимая оценка.
-- Параметры подбирались на тех же фолдах, на которых считался CV. Nested CV не использовался.
-- DNN, XGBoost, Logistic Regression и KNN настраивались на обычном CV, поэтому они не участвовали в итоговом выборе модели.
-- В Group CV пассажиры объединяются по номеру билета. Для новых групп такая проверка может быть слишком строгой.
-- Отдельной таблицы метрик до и после каждого шага предобработки нет. Влияние групповых признаков проверялось отдельным сравнением.
-- Разница между результатами на Kaggle небольшая, поэтому выбирать модель только по лидерборду ненадёжно.
+The pipeline creates features from passenger titles, family size, tickets, cabins, fares, and group composition.
+
+Group statistics are calculated from `train` and `test` together without using the `Survived` target. They improved both local validation scores, so they were kept.
+
+Feature engineering, missing-value imputation, scaling, and encoding are performed inside the pipeline.
+
+## Limitations
+
+- The dataset is small, so a few changed predictions can noticeably affect the score.
+- The holdout was checked during development and is not a fully independent test set.
+- Hyperparameters were tuned on the same folds used for CV. Nested CV was not used.
+- DNN, XGBoost, Logistic Regression, and KNN were tuned on Regular CV and were not included in the final model selection.
+- Group CV uses ticket numbers as group identifiers and may be too strict for passengers from unseen groups.
+- Preprocessing was evaluated as one pipeline. Only the group features were tested separately.
+- Public leaderboard scores are close, so they are not enough to prove that one model is better.
