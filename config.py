@@ -10,9 +10,14 @@ SUBMISSION_DIR = PROJECT_DIR / "submissions" / "production"
 
 TRAIN_PATH = DATA_DIR / "train.csv"
 TEST_PATH = DATA_DIR / "test.csv"
-SUBMISSION_PATH = SUBMISSION_DIR / "titanic_catboost_one_hot.csv"
 
 TARGET = "Survived"
+
+MODEL_NAMES = {"catboost": "CatBoost One-Hot",
+               "dnn": "PyTorch DNN"}
+
+SUBMISSION_PATHS = {"catboost": SUBMISSION_DIR / "titanic_catboost_one_hot.csv",
+                    "dnn": SUBMISSION_DIR / "titanic_pytorch_dnn.csv"}
 
 # Best CatBoost One-Hot parameters from group-aware Optuna tuning
 CATBOOST_PARAMS = {"iterations": 200,
@@ -26,3 +31,17 @@ CATBOOST_PARAMS = {"iterations": 200,
                    "verbose": 0,
                    "allow_writing_files": False,
                    "thread_count": 1}
+
+# Best DNN parameters from regular stratified Optuna tuning
+DNN_PARAMS = {"hidden_size_1": 16,
+              "hidden_size_2": 4,
+              "dropout_1": 0.2,
+              "dropout_2": 0.0,
+              "learning_rate": 0.00019986730447841636,
+              "weight_decay": 7.527339029445822e-05,
+              "batch_size": 16,
+              "epochs": 90,
+              "activation": "ELU",
+              "batch_norm": False,
+              "optimizer": "Adam",
+              "scheduler": "None"}
