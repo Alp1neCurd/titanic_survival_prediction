@@ -168,3 +168,4 @@ The DNN uses two hidden layers, dropout, optional batch normalization, and `BCEW
 - Hyperparameters were tuned on the same dataset used for the final comparison.
 - Some models were originally tuned with different CV schemes, although all final scores use the same validation function.
 - Group features use the unlabeled test manifest, making them a target-free but transductive choice.
+- Categorical embeddings were not tested. Most categorical features have few levels, so one-hot encoding was kept for simplicity and consistent comparison across models.
