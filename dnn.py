@@ -26,7 +26,7 @@ def build_dnn(parameters, input_size):
                          activation_class(),
 
                          nn.Dropout(parameters["dropout_2"]),
-                         nn.Linear(parameters["hidden_size_2"], 1),)
+                         nn.Linear(parameters["hidden_size_2"], 1))
 
 
 def train_dnn(parameters, features, targets, seed):
@@ -39,18 +39,18 @@ def train_dnn(parameters, features, targets, seed):
 
     generator = torch.Generator().manual_seed(seed)
 
-    train_loader = DataLoader(TensorDataset(feature_tensor, target_tensor),batch_size=parameters["batch_size"], shuffle=True, generator=generator,)
+    train_loader = DataLoader(TensorDataset(feature_tensor, target_tensor),batch_size=parameters["batch_size"], shuffle=True, generator=generator)
 
     model = build_dnn(parameters, feature_tensor.shape[1])
     criterion = nn.BCEWithLogitsLoss()
 
     optimizer_class = (torch.optim.AdamW if parameters["optimizer"] == "AdamW" else torch.optim.Adam)
-    optimizer = optimizer_class(model.parameters(), lr=parameters["learning_rate"], weight_decay=parameters["weight_decay"],)
+    optimizer = optimizer_class(model.parameters(), lr=parameters["learning_rate"], weight_decay=parameters["weight_decay"])
 
     scheduler = None
 
     if parameters["scheduler"] == "Cosine":
-        scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=parameters["epochs"], eta_min=1e-5,)
+        scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=parameters["epochs"], eta_min=1e-5)
 
     for _ in range(parameters["epochs"]):
         model.train()
@@ -81,14 +81,14 @@ class TorchDNNClassifier(ClassifierMixin, BaseEstimator):
             raise ValueError("DNN parameters are required")
 
         features = np.asarray(X)
-        self.model_ = train_dnn(self.parameters, features, y, self.random_state,)
+        self.model_ = train_dnn(self.parameters, features, y, self.random_state)
         self.classes_ = np.unique(y)
         self.n_features_in_ = features.shape[1]
 
         return self
 
     def predict_proba(self, X):
-        features = torch.tensor(np.asarray(X), dtype=torch.float32,)
+        features = torch.tensor(np.asarray(X), dtype=torch.float32)
 
         with torch.no_grad():
             probabilities = torch.sigmoid(self.model_(features)).numpy().ravel()

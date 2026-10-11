@@ -9,7 +9,7 @@ from config import N_REPEATS, N_SPLITS, SEED
 
 def evaluate_model(model, X, y, groups, n_jobs=-1):
     """Evaluate a model with regular CV, group CV, and a group holdout."""
-    group_cv = StratifiedGroupKFold(n_splits=N_SPLITS, shuffle=True, random_state=SEED,)
+    group_cv = StratifiedGroupKFold(n_splits=N_SPLITS, shuffle=True, random_state=SEED)
 
     train_index, holdout_index = next(group_cv.split(X, y, groups))
 
@@ -21,12 +21,12 @@ def evaluate_model(model, X, y, groups, n_jobs=-1):
     train_groups = groups.iloc[train_index]
 
     regular_cv = RepeatedStratifiedKFold(n_splits=N_SPLITS, n_repeats=N_REPEATS, random_state=SEED,)
-    regular_scores = cross_val_score(model, train_X, train_y, cv=regular_cv, scoring="accuracy", n_jobs=n_jobs,)
+    regular_scores = cross_val_score(model, train_X, train_y, cv=regular_cv, scoring="accuracy", n_jobs=n_jobs)
 
     group_score_parts = []
 
     for repeat in range(N_REPEATS):
-        repeated_group_cv = StratifiedGroupKFold(n_splits=N_SPLITS,shuffle=True, random_state=SEED + repeat,)
+        repeated_group_cv = StratifiedGroupKFold(n_splits=N_SPLITS,shuffle=True, random_state=SEED + repeat)
 
         scores = cross_val_score(model, train_X, train_y, cv=repeated_group_cv, groups=train_groups, scoring="accuracy", n_jobs=n_jobs)
         group_score_parts.append(scores)

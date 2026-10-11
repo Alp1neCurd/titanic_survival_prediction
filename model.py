@@ -6,7 +6,6 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 
 from config import CATBOOST_PARAMS, DNN_PARAMS, SEED
-from dnn import TorchDNNClassifier
 from features import (CATEGORICAL_FEATURES, NUMERIC_FEATURES, make_feature_engineer)
 
 
@@ -29,6 +28,11 @@ def make_model_pipeline(train_features, test_features, model_name="catboost",):
     if model_name == "catboost":
         model = CatBoostClassifier(**CATBOOST_PARAMS)
     elif model_name == "dnn":
+        try:
+            from dnn import TorchDNNClassifier
+        except ImportError as error:
+            raise ImportError("DNN dependencies are not installed. " "Run: pip install -r requirements_dnn.txt") from error
+
         model = TorchDNNClassifier(parameters=DNN_PARAMS, random_state=SEED,)
     else:
         raise ValueError(f"Unknown model: {model_name}")
