@@ -117,7 +117,7 @@ The main observations were:
 - women survived more often than men: 74% versus 19%;
 - survival decreased from 63% in first class to 24% in third class;
 - children under 16 survived more often than adults: 59% versus 38%;
-- families of 2–4 people had 58% survival, while families of 5 or more had 16%.
+- families of 2-4 people had 58% survival, while families of 5 or more had 16%.
 
 The pipeline creates title, family, ticket, surname, cabin, fare, and group features. Group statistics use train and test features without using `Survived`.
 
