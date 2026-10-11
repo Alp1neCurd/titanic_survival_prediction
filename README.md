@@ -53,6 +53,7 @@ PyTorch DNN:
 ```powershell
 py main.py --model dnn
 ```
+The embedding DNN is evaluated in the notebook and is not available through the `--model` option.
 
 The script evaluates the model, trains it on all labeled passengers, and saves a submission in `submissions/production/`.
 
@@ -110,7 +111,7 @@ CatBoost and Equal Soft Voting differ by only `0.0007`, which is within expected
 | PyTorch DNN | 0.76555 |
 | Sex Rule | 0.76555 |
 
-Kaggle was used as an external check, not for model selection. Small score differences may be leaderboard noise.
+Kaggle was used only as an external check, and small differences may be leaderboard noise. The notebook currently exports the selected model and embedding DNN; other scores came from earlier full-fit experiments. Embeddings lowered the local DNN selection score from 0.8165 to 0.8125, but raised its public score from 0.76555 to 0.77511, so they did not show a consistent improvement.
 
 ## EDA and features
 
@@ -128,4 +129,3 @@ The pipeline creates title, family, ticket, surname, cabin, fare, and group feat
 - Titanic is small, so a few predictions can change the results.
 - Tuning and final comparison use the same dataset.
 - Some models were originally tuned with different CV schemes.
-- Embeddings lowered the local DNN selection score from 0.8165 to 0.8125, but raised its public Kaggle score from 0.76555 to 0.77511.
