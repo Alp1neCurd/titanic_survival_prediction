@@ -82,6 +82,7 @@ The selection score is the mean of Regular CV and Group CV. The holdout is a dev
 | Random Forest | 0.8202 | 0.8081 | 0.8142 | 0.8492 |
 | LightGBM | 0.8174 | 0.8104 | 0.8139 | 0.8380 |
 | Bagging Decision Tree | 0.8230 | 0.8047 | 0.8139 | 0.8715 |
+| PyTorch DNN Embeddings | 0.8165 | 0.8085 | 0.8125 | 0.8324 |
 | KNN | 0.8226 | 0.8005 | 0.8116 | 0.8324 |
 | Decision Tree | 0.8085 | 0.7870 | 0.7977 | 0.8045 |
 | Sex Rule | 0.7851 | 0.7852 | 0.7851 | 0.7933 |
@@ -102,6 +103,7 @@ CatBoost and Equal Soft Voting differ by only `0.0007`, which is within expected
 | CatBoost One-Hot, full fit | 0.77511 |
 | CatBoost One-Hot, 5-fold | 0.77511 |
 | Equal Soft Voting | 0.77511 |
+| PyTorch DNN Embeddings | 0.77511 |
 | SVC | 0.77033 |
 | Random Forest | 0.76794 |
 | LightGBM | 0.76794 |
@@ -126,4 +128,4 @@ The pipeline creates title, family, ticket, surname, cabin, fare, and group feat
 - Titanic is small, so a few predictions can change the results.
 - Tuning and final comparison use the same dataset.
 - Some models were originally tuned with different CV schemes.
-- Categorical embeddings were not tested because most categorical features have few values.
+- Embeddings lowered the local DNN selection score from 0.8165 to 0.8125, but raised its public Kaggle score from 0.76555 to 0.77511.
