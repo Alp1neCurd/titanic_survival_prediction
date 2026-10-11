@@ -7,7 +7,7 @@ from torch.utils.data import DataLoader, TensorDataset
 
 
 def build_dnn(parameters, input_size):
-    """Build a two-layer neural network for binary classification."""
+    """Build a two-layer neural network for binary classification"""
     activation_classes = {"ReLU": nn.ReLU,
                           "LeakyReLU": nn.LeakyReLU,
                           "ELU": nn.ELU}
@@ -30,16 +30,16 @@ def build_dnn(parameters, input_size):
 
 
 def train_dnn(parameters, features, targets, seed):
-    """Train the neural network with a fixed random seed."""
+    """Train the neural network with a fixed random seed"""
     torch.manual_seed(seed)
     np.random.seed(seed)
 
-    feature_tensor = torch.tensor(np.asarray(features), dtype=torch.float32,)
-    target_tensor = torch.tensor(np.asarray(targets), dtype=torch.float32,).reshape(-1, 1)
+    feature_tensor = torch.tensor(np.asarray(features), dtype=torch.float32)
+    target_tensor = torch.tensor(np.asarray(targets), dtype=torch.float32).reshape(-1, 1)
 
     generator = torch.Generator().manual_seed(seed)
 
-    train_loader = DataLoader(TensorDataset(feature_tensor, target_tensor),batch_size=parameters["batch_size"], shuffle=True, generator=generator)
+    train_loader = DataLoader(TensorDataset(feature_tensor, target_tensor), batch_size=parameters["batch_size"], shuffle=True, generator=generator)
 
     model = build_dnn(parameters, feature_tensor.shape[1])
     criterion = nn.BCEWithLogitsLoss()
@@ -70,7 +70,7 @@ def train_dnn(parameters, features, targets, seed):
 
 
 class TorchDNNClassifier(ClassifierMixin, BaseEstimator):
-    """Use the PyTorch DNN through the sklearn estimator interface."""
+    """Use the PyTorch DNN through the sklearn estimator interface"""
 
     def __init__(self, parameters=None, random_state=42):
         self.parameters = parameters

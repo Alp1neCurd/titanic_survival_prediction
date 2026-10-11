@@ -88,7 +88,7 @@ class TitanicFeatureEngineer(TransformerMixin, BaseEstimator):
 
         group_age = pd.Series([self.age_by_title_class_.get((title, pclass), np.nan) for title, pclass in zip(data["Title"], data["Pclass"])], index=data.index)
 
-        data["Age"] = (data["Age"] .fillna(group_age) .fillna(data["Title"].map(self.age_by_title_)) .fillna(self.global_age_median_))
+        data["Age"] = (data["Age"].fillna(group_age).fillna(data["Title"].map(self.age_by_title_)).fillna(self.global_age_median_))
 
         data = data.join(self.ticket_stats_, on="Ticket")
         data = data.join(self.family_stats_, on="Family_Key")
