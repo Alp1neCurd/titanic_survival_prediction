@@ -111,7 +111,11 @@ CatBoost and Equal Soft Voting differ by only `0.0007`, which is within expected
 | PyTorch DNN | 0.76555 |
 | Sex Rule | 0.76555 |
 
-Kaggle was used only as an external check, and small differences may be leaderboard noise. The notebook currently exports the selected model and embedding DNN; other scores came from earlier full-fit experiments. Embeddings lowered the local DNN selection score from 0.8165 to 0.8125, but raised its public score from 0.76555 to 0.77511, so they did not show a consistent improvement.
+Gradient Boosting achieved the highest public score (`0.78708`), while CatBoost had the best local selection score (`0.8275`). This difference shows that local cross-validation and public leaderboard rankings do not always agree. Kaggle was used only as an external check, not for model selection, and small differences may be leaderboard noise.
+
+The notebook currently exports the selected CatBoost submissions and the embedding DNN; other scores came from earlier full-fit experiments.
+
+Embeddings lowered the local DNN selection score from 0.8165 to 0.8125, but raised its public score from 0.76555 to 0.77511, so they did not show a consistent improvement.
 
 ## EDA and features
 

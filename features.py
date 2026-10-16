@@ -53,7 +53,6 @@ def make_group_stats(data, group, prefix):
 
 class TitanicFeatureEngineer(TransformerMixin, BaseEstimator):
     """Create Titanic features and add stored group statistics"""
-
     def __init__(self, ticket_stats=None, family_stats=None):
         self.ticket_stats = ticket_stats
         self.family_stats = family_stats

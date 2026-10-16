@@ -11,6 +11,7 @@ from validation import evaluate_model
 
 def parse_args():
     """Read command-line arguments"""
+
     parser = argparse.ArgumentParser(description="Train and evaluate a Titanic survival model.")
     parser.add_argument("--model", choices=MODEL_NAMES, default="catboost", help="Model to run.")
 

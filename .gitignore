@@ -1,19 +1,14 @@
-# Python
 __pycache__/
 *.py[cod]
 .venv/
 
-# Jupyter
 .ipynb_checkpoints/
 
-# Generated model files
 catboost_info/
 submissions/
 
-# Kaggle data
 data/
 
-# Local backups and verification files
 backup/
 submissions_before_cleanup/
 *_before_cleanup.csv
