@@ -71,12 +71,12 @@ def train_dnn(parameters, features, targets, seed):
 
 class TorchDNNClassifier(ClassifierMixin, BaseEstimator):
     """Use the PyTorch DNN through the sklearn estimator interface"""
-
     def __init__(self, parameters=None, random_state=42):
         self.parameters = parameters
         self.random_state = random_state
 
     def fit(self, X, y):
+        """Train the DNN classifier on the input data"""
         if self.parameters is None:
             raise ValueError("DNN parameters are required")
 
@@ -88,6 +88,7 @@ class TorchDNNClassifier(ClassifierMixin, BaseEstimator):
         return self
 
     def predict_proba(self, X):
+        """Return class probabilities for the input data"""
         features = torch.tensor(np.asarray(X), dtype=torch.float32)
 
         with torch.no_grad():
@@ -96,6 +97,7 @@ class TorchDNNClassifier(ClassifierMixin, BaseEstimator):
         return np.column_stack((1 - probabilities, probabilities))
 
     def predict(self, X):
+        """Return predicted class labels for the input data"""
         probabilities = self.predict_proba(X)[:, 1]
 
         return (probabilities >= 0.5).astype(int)

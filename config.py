@@ -13,6 +13,8 @@ TEST_PATH = DATA_DIR / "test.csv"
 
 TARGET = "Survived"
 
+MODEL_NAME = "catboost"
+
 MODEL_NAMES = {"catboost": "CatBoost One-Hot",
                "dnn": "PyTorch DNN"}
 

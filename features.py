@@ -62,6 +62,7 @@ class TitanicFeatureEngineer(TransformerMixin, BaseEstimator):
         return prepare_passenger_data(X)
 
     def fit(self, X, y=None):
+        """Learn feature statistics using input data"""
         data = self.prepare_data(X)
 
         self.age_by_title_class_ = (
@@ -83,10 +84,9 @@ class TitanicFeatureEngineer(TransformerMixin, BaseEstimator):
         return self
 
     def transform(self, X):
+        """Create features using the learned statistics"""
         data = self.prepare_data(X)
-
         group_age = pd.Series([self.age_by_title_class_.get((title, pclass), np.nan) for title, pclass in zip(data["Title"], data["Pclass"])], index=data.index)
-
         data["Age"] = (data["Age"].fillna(group_age).fillna(data["Title"].map(self.age_by_title_)).fillna(self.global_age_median_))
 
         data = data.join(self.ticket_stats_, on="Ticket")

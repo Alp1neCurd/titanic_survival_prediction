@@ -3,7 +3,7 @@ import argparse
 import pandas as pd
 from sklearn.base import clone
 
-from config import MODEL_NAMES, SUBMISSION_PATHS, TARGET, TEST_PATH, TRAIN_PATH
+from config import MODEL_NAMES, MODEL_NAME, SUBMISSION_PATHS, TARGET, TEST_PATH, TRAIN_PATH
 
 from model import make_model_pipeline
 from validation import evaluate_model
@@ -11,9 +11,8 @@ from validation import evaluate_model
 
 def parse_args():
     """Read command-line arguments"""
-
     parser = argparse.ArgumentParser(description="Train and evaluate a Titanic survival model.")
-    parser.add_argument("--model", choices=MODEL_NAMES, default="catboost", help="Model to run.")
+    parser.add_argument("--model", choices=MODEL_NAMES, default=MODEL_NAME, help="Model to run.")
 
     return parser.parse_args()
 
@@ -41,6 +40,7 @@ def save_submission(model, X, y, test_df, submission_path):
 
 
 def main():
+    """Run model evaluation, full training, and submission export"""
     args = parse_args()
     train_df, test_df = load_data()
 
