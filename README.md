@@ -17,7 +17,7 @@ CatBoost with one-hot encoded features was selected using local cross-validation
 
 ## Setup
 
-Tested with Python 3.12.
+Tested with Python 3.14.6.
 
 ```powershell
 py -m venv .venv
