@@ -7,7 +7,7 @@ from torch.utils.data import DataLoader, TensorDataset
 
 
 def build_dnn(parameters, input_size):
-    """Build a two-layer neural network for binary classification"""
+    """Build a neural network with two hidden layers for binary classification"""
     activation_classes = {"ReLU": nn.ReLU,
                           "LeakyReLU": nn.LeakyReLU,
                           "ELU": nn.ELU}

@@ -1,71 +1,90 @@
 # Titanic Survival Prediction
 
-This project compares classical ML models, boosting, ensembles, and a PyTorch neural network on the Kaggle Titanic dataset.
+Classification models for Kaggle Titanic
 
-CatBoost with one-hot encoded features was selected using local cross-validation.
+CatBoost One-Hot was selected by local cross-validation
+Gradient Boosting achieved the best submitted public score
 
-## Project files
+## Files
 
-- `main.py` - runs the final CatBoost or DNN pipeline
-- `config.py` - paths, seed, and model parameters
+- `main.py` - evaluation, training and submission export
+- `config.py` - paths, model selection and parameters
 - `features.py` - feature engineering
-- `model.py` - preprocessing and model selection
+- `model.py` - preprocessing and model construction
+- `validation.py` - regular CV, group CV and holdout evaluation
 - `dnn.py` - PyTorch classifier
-- `validation.py` - shared validation
-- `titanic_experiments.ipynb` - EDA, tuning, and model comparison
-- `requirements*.txt` - dependencies for CatBoost, DNN, and the notebook
+- `titanic_experiments.ipynb` - EDA, tuning and model comparison
 
 ## Setup
 
-Tested with Python 3.14.6.
+Tested with Python 3.14.6
+
+Download `train.csv` and `test.csv` from the [competition](https://www.kaggle.com/competitions/titanic/data) and place them in `data/`
+
+From the project directory:
 
 ```powershell
-py -m venv .venv
-.venv\Scripts\Activate.ps1
+py -3.14 -m venv .venv
+.\.venv\Scripts\Activate.ps1
 py -m pip install -r requirements.txt
 ```
 
-Use `requirements_dnn.txt` for the DNN or `requirements_notebook.txt` for the complete notebook environment:
+For DNN:
 
 ```powershell
 py -m pip install -r requirements_dnn.txt
+```
+
+For the complete notebook environment:
+
+```powershell
 py -m pip install -r requirements_notebook.txt
 ```
 
-On Linux and macOS, replace `py` with `python3` and activate the environment with:
+On Linux and macOS:
 
 ```bash
+python3.14 -m venv .venv
 source .venv/bin/activate
+python -m pip install -r requirements.txt
 ```
 
-Download `train.csv` and `test.csv` from the [Titanic competition page](https://www.kaggle.com/competitions/titanic/data) and place them in `data/`.
+Use `python` instead of `py` for subsequent commands on Linux and macOS
 
 ## Run
 
-CatBoost:
+Run the model selected by `MODEL_NAME` in `config.py`, currently CatBoost:
 
 ```powershell
 py main.py
 ```
 
-PyTorch DNN:
+Override the model:
 
 ```powershell
+py main.py --model catboost
 py main.py --model dnn
 ```
-The embedding DNN is evaluated in the notebook and is not available through the `--model` option.
 
-The script evaluates the model, trains it on all labeled passengers, and saves a submission in `submissions/production/`.
+The script prints validation metrics, fits the model on all labelled passengers and saves a CSV in `submissions/production/`
 
-A full DNN run on CPU may take several minutes. Its result may differ slightly across hardware and PyTorch versions.
+The DNN runs on CPU
+Categorical embeddings and other experimental models are available in the notebook
 
-## Validation
+## Method
 
-Regular CV uses repeated stratified splits. Group CV keeps passengers with the same ticket in one fold.
+The pipeline creates title, family, ticket, surname, cabin and fare features
+Group statistics use train and test features without using `Survived`
+Age imputation and other learned preprocessing are fitted inside each training fold
 
-The selection score is the mean of Regular CV and Group CV. The holdout is a development check and is not used for model selection.
+A group holdout separates development and holdout passengers by ticket
+On the development subset, Regular CV uses repeated stratified splits and Group CV keeps shared tickets together
+The selection score is the mean of Regular CV and Group CV
+The holdout is a development check and is not used for model selection
 
 ## Local results
+
+Higher scores are better
 
 | Model | Regular CV | Group CV | Selection | Holdout |
 |---|---:|---:|---:|---:|
@@ -90,7 +109,8 @@ The selection score is the mean of Regular CV and Group CV. The holdout is a dev
 | Sex + Pclass Tree | 0.7734 | 0.7735 | 0.7734 | 0.7933 |
 | Dummy Classifier | 0.6166 | 0.6166 | 0.6166 | 0.6145 |
 
-CatBoost and Equal Soft Voting differ by only `0.0007`, which is within expected CV noise. CatBoost was kept because it is a simpler single model.
+CatBoost and Equal Soft Voting differ by only `0.0007` on these splits
+CatBoost was kept as a simpler single model; this small difference does not establish a reliable ranking
 
 ## Kaggle results
 
@@ -102,7 +122,7 @@ CatBoost and Equal Soft Voting differ by only `0.0007`, which is within expected
 | Bagging Decision Tree | 0.77990 |
 | Equal Hard Voting | 0.77751 |
 | CatBoost One-Hot, full fit | 0.77511 |
-| CatBoost One-Hot, 5-fold | 0.77511 |
+| CatBoost One-Hot, five-fold | 0.77511 |
 | Equal Soft Voting | 0.77511 |
 | PyTorch DNN Embeddings | 0.77511 |
 | SVC | 0.77033 |
@@ -111,25 +131,17 @@ CatBoost and Equal Soft Voting differ by only `0.0007`, which is within expected
 | PyTorch DNN | 0.76555 |
 | Sex Rule | 0.76555 |
 
-Gradient Boosting achieved the highest public score (`0.78708`), while CatBoost had the best local selection score (`0.8275`). This difference shows that local cross-validation and public leaderboard rankings do not always agree. Kaggle was used only as an external check, not for model selection, and small differences may be leaderboard noise.
+Gradient Boosting had the highest public score, while CatBoost had the highest local selection score
+The public leaderboard was used as an external check rather than the model selection criterion
 
-The notebook currently exports the selected CatBoost submissions and the embedding DNN; other scores came from earlier full-fit experiments.
+The notebook exports full-fit and five-fold submissions for the selected model, plus the embedding DNN
+Other public scores came from earlier full-fit experiments
 
-Embeddings lowered the local DNN selection score from 0.8165 to 0.8125, but raised its public score from 0.76555 to 0.77511, so they did not show a consistent improvement.
-
-## EDA and features
-
-The main observations were:
-
-- women survived more often than men: 74% versus 19%;
-- survival decreased from 63% in first class to 24% in third class;
-- children under 16 survived more often than adults: 59% versus 38%;
-- families of 2-4 people had 58% survival, while families of 5 or more had 16%.
-
-The pipeline creates title, family, ticket, surname, cabin, fare, and group features. Group statistics use train and test features without using `Survived`.
+Embeddings lowered the local DNN selection score but raised its public score, so they did not show a consistent improvement
 
 ## Limitations
 
-- Titanic is small, so a few predictions can change the results.
-- Tuning and final comparison use the same dataset.
-- Some models were originally tuned with different CV schemes.
+- Titanic is small, so a few predictions can change the results
+- Tuning and final comparison reuse the same development data
+- Some models were tuned with different CV schemes
+- DNN results may vary across hardware and PyTorch versions
