@@ -17,7 +17,8 @@ Gradient Boosting achieved the best submitted public score
 
 ## Setup
 
-Tested with Python 3.14.6
+Requires Python 3.12 or newer
+Developed and tested with Python 3.14.6
 
 Download `train.csv` and `test.csv` from the [competition](https://www.kaggle.com/competitions/titanic/data) and place them in `data/`
 
@@ -71,10 +72,15 @@ The script prints validation metrics, fits the model on all labelled passengers 
 The DNN runs on CPU
 Categorical embeddings and other experimental models are available in the notebook
 
+The number of training epochs was selected through cross-validation
+Early stopping was not used
+
 ## Method
 
 The pipeline creates title, family, ticket, surname, cabin and fare features
-Group statistics use train and test features without using `Survived`
+Group statistics use the full passenger manifest, including validation and test features, without using `Survived`
+
+This is a transductive setup: passenger features are available in advance
 Age imputation and other learned preprocessing are fitted inside each training fold
 
 A group holdout separates development and holdout passengers by ticket
@@ -143,5 +149,5 @@ Embeddings lowered the local DNN selection score but raised its public score, so
 
 - Titanic is small, so a few predictions can change the results
 - Tuning and final comparison reuse the same development data
-- Some models were tuned with different CV schemes
+- Models were tuned with different CV schemes and compared using a common final evaluation procedure
 - DNN results may vary across hardware and PyTorch versions
